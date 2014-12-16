@@ -1,60 +1,1 @@
-var key = 'fcdb711b312bc36301b8332f0cfa68fa';
-
-function InitialGetPhotos(topic){
-	var request = {
-		tags: topic,
-		tagmode: "any",
-		format: "json"
-	};
-	var call = $.ajax({
-		url: "https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
-		data: request,
-		dataType: "json",
-		type: "GET",
-		success: function(data){
-			console.log('it worked');
-			displayPhotos(data);
-		},
-		error: function(){console.log('it failed')}
-	});
-};
-
-function AfterGetPhotos(topic){
-	$("[class*='container']").find("a").slideUp(600);
-	setTimeout(function() {
-		$("[class*='container']").text('');
-		InitialGetPhotos(topic);		
-	}, 550)
-};
-
-function displayPhotos(data){
-	$.each(data.items, function(i, item){
-		if(i == 30){
-			console.log('it asdd');
-			return false;
-		}
-		var pic = item.media.m;
-		pic = pic.replace("_m.jpg", "_b.jpg");
-		var p = i % 3;
-		// $("." + p + "_container").append("<a href='" + item.link + "'><img src='" + pic + "'/></a>");
-		$("." + p + "_container").append("<img class='picture' src='" + pic + "'/>");
-		$(".main").find("img").show('clip', 600);
-	});
-}
-
-$(document).ready(function(){
-	InitialGetPhotos('owls');
-	//get photos click
-	$(".getP").click(function(){
-		AfterGetPhotos('color');
-	});
-	//get overlay click
-	// $(".pic").click(function(){
-	$(".picture").click(function(){
-		$(".box_overlay").show();
-		console.log('here');
-	});
-	$(".box_overlay").click(function(){
-		$(this).toggle();
-	})
-});
+﻿var key = 'fcdb711b312bc36301b8332f0cfa68fa';var lbimg = [];var l1 = 0;var l2 = 0;var l3 = 0;function InitialGetPhotos(topic){	var request = {		tags: topic,		tagmode: "any",		format: "json"	};	var call = $.ajax({		url: "https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",		data: request,		dataType: "json",		type: "GET",		success: function(data){			console.log('it worked');			displayPhotos(data);		},		error: function(){console.log('it failed')}	}).done(function(){            $(".picture").click(function(){                  for(i = 0; i < 20; i++){                      if(i == $(this).attr('id')){                            $(".lbpicture[id='" + i + "']").css("display", "block");                            $(".lightbox").toggle();                       }                   }			});     });};function AfterGetPhotos(topic){	$("[class*='container']").find(".picture").slideUp(600);    $(".lightbox").text('');    setTimeout(function() {		$("[class*='container']").text('');		InitialGetPhotos(topic);	}, 550)};function displayPhotos(data){	var p = 0;	$.each(data.items, function(i, item){		if(i == 30){			console.log('it asdd');			return false;		}		var pic = item.media.m;		pic = pic.replace("_m.jpg", "_b.jpg");		var newimg = "<div class='picture' id='" + i + " '><img src='" + pic + "'/></div>"		var getpic = new Image();		getpic.src = pic;		getpic.onload = function(){			console.log(this.width + ", " +this.height);		}		//check which length is the shortest, if all equal, put in 0;		if(l1 <= l2 && l1 <= l3){			l1 = l1 + getpic.height;		}else if(l2 <= l3){			l2 = l2 + getpic.height;		}else{			l3 = l3 + getpic.height;		}		console.log("l1: " + l1 + "	  l2: " + l2 + "    l3: " + l3);		p = i % 3;		$("."+p+"_container").append(newimg);		$(".lightbox").append("<img class='lbpicture' id='" + i + "' src='" + pic + "'/>");     		$(".main").find("img").show('clip', 600);	});	l1 = 0; l2 = 0; l3 = 0;}$(document).ready(function(){	InitialGetPhotos('owls');	//get photos click	$(".getP").click(function(){		AfterGetPhotos('color');	});	//exit box overlay	$(".lightbox").click(function(){         $(".lbpicture").hide();		$(this).toggle();	})    $('.gettag').submit(function(event){        var tag = $("input[name='tagsearch']").val();        $("input[name='tagsearch']").val('');        console.log(tag);        AfterGetPhotos (tag);    });});//http://fmaul.de/gallery-grid-example/ GALLERY EXAMPLE CODE FOR LATER
